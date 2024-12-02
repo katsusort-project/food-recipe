@@ -7,18 +7,22 @@
             <span class="text-blue-700">Katsu</span>-<span class="text-red-700">Sort</span> Recipe Search Engine
         </h1>
         
-        <div class="relative w-full">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+        <form action="{% url 'katsu_app:get_recipe' %}" method="get" class="w-full">
+            <div class="relative w-full">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+                <input 
+                    type="text" 
+                    name="recipe"
+                    placeholder="Search for recipes..." 
+                    class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                >
+                <button type="submit" class="hidden">Search</button>
             </div>
-            <input 
-                type="text" 
-                placeholder="Search for recipes..." 
-                class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-            >
-        </div>
+        </form>
     </div>
 </div>
 {% endblock content %}
