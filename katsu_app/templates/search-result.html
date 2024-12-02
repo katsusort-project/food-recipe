@@ -27,11 +27,20 @@
 
     <p class="text-lg italic text-blue-700">Hasil pencarian dari <span class="font-bold">{{ query_input }}</span></p>
 
+    <br>
+
     <div class="flex justify-between w-full flex-grow">
         <div class="h-full w-[70%] pr-6">
             {% if recipes %}
-                <!-- Your recipe results content here -->
-                <p>Recipe results will be displayed here</p>
+                <div class="flex flex-col space-y-4">
+                    {% for recipe in recipes %}
+                        <div class="bg-white rounded-xl shadow-lg p-4 hover:shadow-xl transition-shadow duration-300">
+                            <a href="{{ recipe.recipe }}" class="text-blue-600 hover:text-blue-800">
+                                {{ recipe.recipeLabel }}
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
             {% else %}
                 <p class="text-gray-600 justify-center items-center">No recipes match your search</p>
             {% endif %}
