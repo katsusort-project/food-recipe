@@ -129,7 +129,7 @@ def get_recipe(request):
     indo_recipes = query_manager.execute_query(query)
     for row in indo_recipes:
         row['isIndo'] = True
-        # row['recipe'] = row['recipe'].replace('http://katsusort.org/', '')
+        row['recipe'] = row['recipe'].replace('http://katsusort.org/', '')
 
     results = non_indo_recipes + indo_recipes
 
