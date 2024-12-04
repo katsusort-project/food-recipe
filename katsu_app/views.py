@@ -129,7 +129,8 @@ def get_recipe_details(request, recipe_uri):
         context['instructions'] = recipe.get('instructions', '').split('\r\n')
         context['ingredients'] = [i for i in recipe.get('ingredients', '').split(', ') if i]
         context['is_indo_recipe'] = True
- 
+
+    recipe['recipe'] = recipe['recipe'].replace('http://katsusort.org/', '')    
     context['recipe'] = recipe
     
     return render(request, 'search-result-details.html', context)
