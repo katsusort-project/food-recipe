@@ -23,6 +23,8 @@ def get_recipe(request):
     """ % recipe
 
     results = query_manager.execute_query(query)
+    for row in results:
+        row['recipe'] = row['recipe'].replace('http://katsusort.org/', '')
 
     return render(request, 'search-result.html', {'recipes': results, 'query_input': recipe})
 
