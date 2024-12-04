@@ -2,7 +2,6 @@
 
 {% block content %}
 <div class="flex flex-col min-h-screen bg-gray-100 p-6">
-    <!-- Header Section -->
     <div class="flex items-center w-full mb-6">
         <!-- Logo / Title -->
         <a href="{% url 'katsu_app:show_main' %}">
@@ -37,33 +36,80 @@
     </div>
 
     <!-- Search Result Header -->
-    <p class="text-lg italic font-semibold text-blue-700 mb-1">
-        Hasil pencarian untuk "<span class="font-bold">{{ query_input }}"</span>
-    </p>
-    {% if recipes %}
-        <p class="text-lg italic font-semibold text-blue-700 mb-3">
-            Ditemukan <span class="text-l font-bold text-red-600">{{ recipes|length }}</span> resep yang mungkin sesuai.
-        </p>
-    {% endif %}
+    <div class="flex justify-between items-center mb-4">
+        <div>
+            <p class="text-lg italic font-semibold text-blue-700 mb-1">
+                Hasil pencarian untuk "<span class="font-bold">{{ query_input }}"</span>
+            </p>
+            {% if recipes %}
+                <p class="text-lg italic font-semibold text-blue-700">
+                    Ditemukan <span class="text-l font-bold text-red-600">{{ recipes|length }}</span> resep yang mungkin sesuai.
+                </p>
+            {% endif %}
+        </div>
+        <div class="flex space-x-2">
+            <button id="sortAsc" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Sort A-Z</button>
+            <button id="sortDesc" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Sort Z-A</button>
+        </div>
+    </div>
 
     <!-- Main Content -->
     <div class="flex flex-wrap justify-between w-full flex-grow gap-6">
         <!-- Recipe List -->
-        <div class="flex-1 min-w-[65%]">
-            {% if recipes %}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {% for recipe in recipes %}
-                <div class="bg-white rounded-xl shadow-lg p-4 hover:shadow-xl transition-shadow duration-300 hover:border-2 hover:border-blue-500">
-                    <a href="{{ recipe.recipe }}" class="text-blue-600 hover:text-blue-800 font-semibold text-lg">
-                        {{ recipe.recipeLabel }}
-                    </a>
-                </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <p class="text-gray-600 text-center">Tidak ada resep yang cocok dengan pencarian Anda.</p>
-            {% endif %}
+        <div id="recipeContainer" class="flex-1 min-w-[65%]">
+            <!-- Recipes will be loaded here -->
         </div>
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        async function loadRecipes(order) {
+            try {
+                const response = await $.ajax({
+                    url: '{% url "katsu_app:get_recipe" %}',
+                    data: {
+                        'recipe': '{{ query_input }}',
+                        'order': order
+                    },
+                    dataType: 'json'
+                });
+
+                let recipeHtml = '';
+                if (response.recipes.length > 0) {
+                    recipeHtml = '<div class="grid grid-cols-1 md:grid-cols-2 gap-6">';
+                    response.recipes.forEach(function(recipe) {
+                        recipeHtml += `
+                            <div class="bg-white rounded-xl shadow-lg p-4 hover:shadow-xl transition-shadow duration-300 hover:border-2 hover:border-blue-500">
+                                <a href="${recipe.recipe}" class="text-blue-600 hover:text-blue-800 font-semibold text-lg">
+                                    ${recipe.recipeLabel}
+                                </a>
+                            </div>
+                        `;
+                    });
+                    recipeHtml += '</div>';
+                } else {
+                    recipeHtml = '<p class="text-gray-600 text-center">Tidak ada resep yang cocok dengan pencarian Anda.</p>';
+                }
+                $('#recipeContainer').html(recipeHtml);
+            } catch (error) {
+                console.error('Error loading recipes:', error);
+                $('#recipeContainer').html('<p class="text-red-600 text-center">Terjadi kesalahan saat memuat resep.</p>');
+            }
+        }
+
+        // Initial load
+        loadRecipes('ASC');
+
+        // Sort buttons
+        $('#sortAsc').click(function() {
+            loadRecipes('ASC');
+        });
+
+        $('#sortDesc').click(function() {
+            loadRecipes('DESC');
+        });
+    });
+</script>
 {% endblock content %}

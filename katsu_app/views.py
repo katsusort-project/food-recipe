@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from katsu_app.sparql_func import SPARQLQueryManager
+from django.http import JsonResponse
 
 # Create your views here.
 def show_main(request):
@@ -8,7 +9,8 @@ def show_main(request):
 def get_recipe(request):
     endpoint = "http://localhost:7200/repositories/food-recipe"
     query_manager = SPARQLQueryManager(endpoint)
-    recipe = request.GET.get('recipe').strip()
+    recipe = request.GET.get('recipe', '').strip()
+    order = request.GET.get('order', 'ASC')
     
     query = """
         PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -20,13 +22,17 @@ def get_recipe(request):
                     v:url ?url .
             FILTER(CONTAINS(LCASE(?recipeLabel), LCASE("%s"))) .
         }
-    """ % recipe
+        ORDER BY %s(?recipeLabel)
+    """ % (recipe, order)
 
     results = query_manager.execute_query(query)
     for row in results:
         row['recipe'] = row['recipe'].replace('http://katsusort.org/', '')
 
-    return render(request, 'search-result.html', {'recipes': results, 'query_input': recipe})
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'recipes': results})
+    else:
+        return render(request, 'search-result.html', {'recipes': results, 'query_input': recipe})
 
 def get_recipe_details(request, recipe_uri):
     endpoint = "http://localhost:7200/repositories/food-recipe"
