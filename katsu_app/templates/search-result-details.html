@@ -4,9 +4,11 @@
 <div class="container mx-auto px-4 py-8 bg-gray-100 min-h-screen">
     <div class="max-w-4xl mx-auto">
         <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
-            <h1 class="text-3xl font-bold">
-                <span class="text-blue-700">Katsu</span>-<span class="text-red-700">Sort</span>
-            </h1>
+            <a href="{% url 'katsu_app:show_main' %}">
+                <h1 class="text-3xl font-bold">
+                    <span class="text-blue-700">katsu</span><span class="text-red-700">Sort()</span>
+                </h1>
+            </a>
             
             <form action="{% url 'katsu_app:get_recipe' %}" method="get" class="w-full max-w-xl">
                 <div class="relative">
@@ -18,7 +20,8 @@
                     <input 
                         type="text" 
                         name="recipe"
-                        placeholder="Search for recipes..." 
+                        placeholder="Search for recipes..."
+                        value="{{ recipe.recipeLabel }}" 
                         class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                     >
                     <button type="submit" class="hidden">Search</button>
@@ -26,7 +29,7 @@
             </form>
         </div>
 
-        <h1 class="text-3xl text-blue-700 text-center font-bold mb-6">{{ recipe.recipeLabel }}</h1>
+        <h1 class="text-3xl text-blue-700 text-center font-bold mb-6">{{ recipe.recipeLabel|default:"-" }}</h1>
 
         <div class="bg-white rounded-xl shadow-lg overflow-hidden">
             {% if is_indo_recipe %}
@@ -37,21 +40,21 @@
                             <svg class="w-5 h-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M10 3.22l-.61-.6a5.5 5.5 0 0 0-7.78 7.77L10 18.78l8.39-8.4a5.5 5.5 0 0 0-7.78-7.77l-.61.61z"/>
                             </svg>
-                            <span>{{ recipe.loves }} Loves</span>
+                            <span>{{ recipe.loves|default:"-" }} Loves</span>
                         </div>
                         
-                        <a href="{{ recipe.url }}" target="_blank" class="text-blue-600 hover:underline italic">Original Recipe Website</a>
+                        <a href="{{ recipe.url}}" target="_blank" class="text-blue-600 hover:underline italic">Original Recipe Website</a>
                     </div>
 
                     <div class="grid md:grid-cols-3 gap-4 mb-6">
                         <div class="bg-gray-50 p-3 rounded">
-                            <span class="font-semibold">Clean Title:</span> {{ recipe.cleanTitle }}
+                            <span class="font-semibold">Clean Title:</span> {{ recipe.cleanTitle|default:"-" }}
                         </div>
                         <div class="bg-gray-50 p-3 rounded">
-                            <span class="font-semibold">Total Ingredients:</span> {{ recipe.totalIngredients }}
+                            <span class="font-semibold">Total Ingredients:</span> {{ recipe.totalIngredients|default:"-" }}
                         </div>
                         <div class="bg-gray-50 p-3 rounded">
-                            <span class="font-semibold">Total Steps:</span> {{ recipe.totalSteps }}
+                            <span class="font-semibold">Total Steps:</span> {{ recipe.totalSteps|default:"-" }}
                         </div>
                     </div>
 
@@ -59,7 +62,7 @@
                         <h3 class="text-lg font-semibold mb-2">Ingredients:</h3>
                         <div class="bg-gray-50 p-4 rounded">
                             {% for ingredient in ingredients %}
-                                <p class="text-gray-700">• {{ ingredient }}</p>
+                                <p class="text-gray-700">• {{ ingredient|default:"-" }}</p>
                             {% endfor %}
                         </div>
                     </div>
@@ -68,7 +71,7 @@
                         <h3 class="text-lg font-semibold mb-2">Instructions:</h3>
                         <div class="bg-gray-50 p-4 rounded">
                             {% for instruction in instructions %}
-                                <p class="text-gray-700">{{ instruction }}</p>
+                                <p class="text-gray-700">{{ instruction|default:"-" }}</p>
                             {% endfor %}
                         </div>
                     </div>
@@ -84,7 +87,8 @@
                                         ★
                                     {% endfor %}
                                 {% endwith %}
-                                <span class="text-gray-600 ml-2">({{ recipe.voteCount }} votes)</span>
+                                <span class="text-gray-600">{{ recipe.rating|default:"-" }}/5</span>
+                                <span class="text-gray-600">({{ recipe.voteCount|default:"-" }} votes)</span>
                             </div>
                         </div>
                         <a href="{{ recipe.url }}" target="_blank" class="text-blue-700 italic hover:underline">Original Recipe Website</a>
@@ -92,23 +96,23 @@
         
                     <div class="grid md:grid-cols-3 gap-4 mb-6">
                         <div class="bg-gray-50 p-3 rounded">
-                            <span class="font-semibold">Cuisine:</span> {{ recipe.cuisineLabel }}
+                            <span class="font-semibold">Cuisine:</span> {{ recipe.cuisineLabel|default:"-" }}
                         </div>
                         <div class="bg-gray-50 p-3 rounded">
-                            <span class="font-semibold">Course:</span> {{ recipe.courseLabel }}
+                            <span class="font-semibold">Course:</span> {{ recipe.courseLabel|default:"-" }}
                         </div>
                         <div class="bg-gray-50 p-3 rounded">
                             <span class="font-semibold">Diet:</span> 
-                            <a href="{{ recipe.dietInfo }}" target="_blank" class="text-blue-600 hover:underline">{{ recipe.dietLabel }}</a>
+                            <a href="{{ recipe.dietInfo }}" target="_blank" class="text-blue-600 hover:underline">{{ recipe.dietLabel|default:"-" }}</a>
                         </div>
                     </div>
         
                     <div class="grid md:grid-cols-2 gap-4 mb-6">
                         <div class="bg-gray-50 p-3 rounded">
-                            <span class="font-semibold">Prep Time:</span> {{ recipe.prepTimeInMinutes }} mins
+                            <span class="font-semibold">Prep Time:</span> {{ recipe.prepTimeInMinutes|default:"-" }} mins
                         </div>
                         <div class="bg-gray-50 p-3 rounded">
-                            <span class="font-semibold">Cook Time:</span> {{ recipe.cookTimeInMinutes }} mins
+                            <span class="font-semibold">Cook Time:</span> {{ recipe.cookTimeInMinutes|default:"-" }} mins
                         </div>
                     </div>
         
@@ -116,7 +120,7 @@
                         <h3 class="text-lg font-semibold mb-2">Ingredients:</h3>
                         <div class="bg-gray-50 p-4 rounded">
                             {% for ingredient in ingredients %}
-                                <p class="text-gray-700">• {{ ingredient }}</p>
+                                <p class="text-gray-700">• {{ ingredient|default:"-" }}</p>
                             {% endfor %}
                         </div>
                     </div>
@@ -125,7 +129,7 @@
                         <h3 class="text-lg font-semibold mb-2">Instructions:</h3>
                         <div class="bg-gray-50 p-4 rounded">
                             {% for instruction in instructions %}
-                                <p class="text-gray-700">• {{ instruction }}</p>
+                                <p class="text-gray-700">• {{ instruction|default:"-" }}</p>
                             {% endfor %}
                         </div>
                     </div>
@@ -135,7 +139,7 @@
                         <h3 class="text-lg font-semibold mb-2">Tags:</h3>
                         <div class="flex flex-wrap gap-2">
                             {% for tag in tags %}
-                                <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">{{ tag }}</span>
+                                <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">{{ tag|default:"-" }}</span>
                             {% endfor %}
                         </div>
                     </div>

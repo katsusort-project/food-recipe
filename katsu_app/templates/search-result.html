@@ -1,94 +1,68 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="flex flex-col w-screen h-screen bg-gray-200 p-8">
-    <div class="flex w-full mb-6">
-        <h1 class="text-2xl font-bold mr-4">
-            <span class="text-blue-700">Katsu</span>-<span class="text-red-700">Sort</span>
-        </h1>
-        
-        <form action="{% url 'katsu_app:get_recipe' %}" method="get" class="flex-grow max-w-xl">
-            <div class="relative w-full">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
+<div class="flex flex-col min-h-screen bg-gray-100 p-6">
+    <!-- Header Section -->
+    <div class="flex items-center w-full mb-6">
+        <!-- Logo / Title -->
+        <a href="{% url 'katsu_app:show_main' %}">
+            <h1 class="text-3xl font-bold mr-6">
+                <span class="text-blue-700">katsu</span><span class="text-red-700">Sort()</span>
+            </h1>
+        </a>
+
+        <!-- Search Bar & Filter -->
+        <div class="flex items-center space-x-4 w-full max-w-4xl">
+            <!-- Search Bar -->
+            <form action="{% url 'katsu_app:get_recipe' %}" method="get" class="flex flex-grow">
+                <div class="relative flex-grow">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <input 
+                        type="text" 
+                        name="recipe" 
+                        placeholder="Search for recipes..." 
+                        value="{{ query_input }}"
+                        class="w-full pl-10 pr-4 py-2 rounded-l-lg border-t border-l border-b border-gray-300 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    >
                 </div>
-                <input 
-                    type="text" 
-                    name="recipe"
-                    placeholder="Search for recipes..." 
-                    class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                >
-                <button type="submit" class="hidden">Search</button>
-            </div>
-        </form>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-r-lg hover:bg-blue-700">
+                    Search
+                </button>
+            </form>
+        </div>
     </div>
 
-    <p class="text-lg italic text-blue-700">Hasil pencarian dari <span class="font-bold">{{ query_input }}</span></p>
+    <!-- Search Result Header -->
+    <p class="text-lg italic font-semibold text-blue-700 mb-1">
+        Hasil pencarian untuk "<span class="font-bold">{{ query_input }}"</span>
+    </p>
+    {% if recipes %}
+        <p class="text-lg italic font-semibold text-blue-700 mb-3">
+            Ditemukan <span class="text-l font-bold text-red-600">{{ recipes|length }}</span> resep yang mungkin sesuai.
+        </p>
+    {% endif %}
 
-    <br>
-
-    <div class="flex justify-between w-full flex-grow">
-        <div class="h-full w-[70%] pr-6">
+    <!-- Main Content -->
+    <div class="flex flex-wrap justify-between w-full flex-grow gap-6">
+        <!-- Recipe List -->
+        <div class="flex-1 min-w-[65%]">
             {% if recipes %}
-                <div class="flex flex-col space-y-4">
-                    {% for recipe in recipes %}
-                        <div class="bg-white rounded-xl shadow-lg p-4 hover:shadow-xl transition-shadow duration-300">
-                            <a href="{{ recipe.recipe }}" class="text-blue-600 hover:text-blue-800">
-                                {{ recipe.recipeLabel }}
-                            </a>
-                        </div>
-                    {% endfor %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {% for recipe in recipes %}
+                <div class="bg-white rounded-xl shadow-lg p-4 hover:shadow-xl transition-shadow duration-300 hover:border-2 hover:border-blue-500">
+                    <a href="{{ recipe.recipe }}" class="text-blue-600 hover:text-blue-800 font-semibold text-lg">
+                        {{ recipe.recipeLabel }}
+                    </a>
                 </div>
-            {% else %}
-                <p class="text-gray-600 justify-center items-center">No recipes match your search</p>
-            {% endif %}
-        </div>
-
-        <div class="w-[30%] bg-white shadow-md rounded-xl p-4">
-            <h2 class="font-semibold text-lg mb-4">Filter Options</h2>
-            
-            <div class="space-y-3">
-                <div class="relative">
-                    <button 
-                        type="button" 
-                        class="w-full text-left px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        x-data="{ open: false }"
-                        @click="open = !open"
-                    >
-                        Rating
-                        <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
-                    
-                    <div 
-                        x-show="open" 
-                        class="absolute z-10 w-full bg-white border rounded-md shadow-lg mt-1"
-                    >
-                        <ul class="py-1">
-                            <li class="px-3 py-2 hover:bg-gray-100 cursor-pointer">1-2 Stars</li>
-                            <li class="px-3 py-2 hover:bg-gray-100 cursor-pointer">3-4 Stars</li>
-                            <li class="px-3 py-2 hover:bg-gray-100 cursor-pointer">5 Stars</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="relative">
-                    <button 
-                        type="button" 
-                        class="w-full text-left px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        x-data="{ open: false }"
-                        @click="open = !open"
-                    >
-                        Author
-                        <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
-                </div>
+                {% endfor %}
             </div>
+            {% else %}
+            <p class="text-gray-600 text-center">Tidak ada resep yang cocok dengan pencarian Anda.</p>
+            {% endif %}
         </div>
     </div>
 </div>
