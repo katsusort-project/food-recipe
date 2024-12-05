@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from difflib import SequenceMatcher
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from urllib.parse import quote
+import math
 
 def show_main(request):
     return render(request, 'index.html')
@@ -196,11 +197,12 @@ def get_recipe_details(request, recipe_uri):
     return render(request, 'search-result-details.html', context)
 
 def calculate_stars(rating):
-    full_stars = int(rating)
+    full_stars = math.floor(rating)
     empty_stars = 5 - full_stars
     
     stars = ['★'] * full_stars
     stars.extend(['☆'] * empty_stars)
+    print(''.join(stars))
     
     return {
         'star_display': ''.join(stars),
