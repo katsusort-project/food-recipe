@@ -4,7 +4,6 @@ from django.http import JsonResponse
 from difflib import SequenceMatcher
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-# Create your views here.
 def show_main(request):
     return render(request, 'index.html')
 
@@ -14,7 +13,7 @@ def get_recipe(request):
     recipe = request.GET.get('recipe', '').strip()
     order = request.GET.get('order', '')
     page = request.GET.get('page', 1)
-    recipes_per_page = 20  # Number of recipes per page
+    recipes_per_page = 20
 
     query = """
         PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -41,7 +40,6 @@ def get_recipe(request):
     if order == 'RELEVANCE':
         results = rank_results(results, recipe)
 
-    # Create Paginator
     paginator = Paginator(results, recipes_per_page)
     try:
         paginated_results = paginator.page(page)
@@ -50,7 +48,6 @@ def get_recipe(request):
     except EmptyPage:
         paginated_results = paginator.page(paginator.num_pages)
 
-    # Prepare context for template
     response_data = {
         'recipes': list(paginated_results),
         'total_pages': paginator.num_pages,
@@ -84,106 +81,104 @@ def get_recipe_details(request, recipe_uri):
     query_manager = SPARQLQueryManager(endpoint)
     context = {}
 
-    # Query for non-indonesian recipes
+    # Query for indonesian recipes
+    is_indo_recipe = True
     query = """
         PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
         PREFIX v: <http://katsusort.org/vocab#>
 
-        SELECT 
-        ?recipe ?recipeLabel ?url ?recordHealthLabel ?voteCount ?rating 
-        ?cuisineLabel ?courseLabel ?dietLabel ?dietInfo ?description
-        ?prepTimeInMinutes ?cookTimeInMinutes ?authorLabel ?categoryLabel 
-        ?ingredients ?instructions 
-        (GROUP_CONCAT(DISTINCT ?tagLabel; SEPARATOR="&") AS ?tags)
+        SELECT ?recipe ?recipeLabel ?url ?loves ?totalIngredients 
+        ?totalSteps ?instructions ?ingredients ?cleanTitle
         WHERE {
             FILTER(STR(?recipe) = "http://katsusort.org/%s") .
             ?recipe rdfs:label ?recipeLabel ;
-                   v:url ?url .
-            OPTIONAL { 
-                ?recipe v:recordHealth ?recordHealth .
-                ?recordHealth rdfs:label ?recordHealthLabel 
-            }
-            OPTIONAL { ?recipe v:voteCount ?voteCount }
-            OPTIONAL { ?recipe v:rating ?rating }
-            OPTIONAL { 
-                ?recipe v:cuisine ?cuisine .
-                ?cuisine rdfs:label ?cuisineLabel 
-            }
-            OPTIONAL { 
-                ?recipe v:course ?course .
-                ?course rdfs:label ?courseLabel 
-            }
-            OPTIONAL { 
-                ?recipe v:diet ?diet .
-                ?diet rdfs:label ?dietLabel .
-                ?diet rdfs:seeAlso ?dietInfo 
-            }
-            OPTIONAL { ?recipe v:description ?description }
-            OPTIONAL { ?recipe v:prepTimeInMinutes ?prepTimeInMinutes }
-            OPTIONAL { ?recipe v:cookTimeInMinutes ?cookTimeInMinutes }
-            OPTIONAL { 
-                ?recipe v:author ?author .
-                ?author rdfs:label ?authorLabel 
-            }
-            OPTIONAL { 
-                ?recipe v:category ?category .
-                ?category rdfs:label ?categoryLabel 
-            }
-            OPTIONAL { ?recipe v:ingredients ?ingredients }
-            OPTIONAL { ?recipe v:instructions ?instructions }
-            OPTIONAL { 
-                ?recipe v:tags ?tag .
-                ?tag rdfs:label ?tagLabel 
-            }
+                    v:url ?url ;
+                    v:loves ?loves ;
+                    v:totalIngredients ?totalIngredients ;
+                    v:totalSteps ?totalSteps ;
+                    v:instructions ?instructions ;
+                    v:ingredients ?ingredients .
+
+            OPTIONAL { ?recipe v:cleanTitle ?cleanTitle } .
         }
-        GROUP BY ?recipe ?recipeLabel ?url ?recordHealthLabel ?voteCount 
-        ?rating ?cuisineLabel ?courseLabel ?dietLabel ?dietInfo ?description
-        ?prepTimeInMinutes ?cookTimeInMinutes ?authorLabel ?categoryLabel 
-        ?ingredients ?instructions
     """ % recipe_uri
 
     results = query_manager.execute_query(query)
-
     if results:
         recipe = results[0]
         context['instructions'] = recipe.get('instructions', '').split('\r\n')
-        context['ingredients'] = recipe.get('ingredients', '').split(', ')
-        context['tags'] = recipe.get('tags', '').split('&')
-        if recipe.get('rating'):
-            recipe['rating'] = round(float(recipe['rating']), 2)
-        context['is_indo_recipe'] = False
+        context['ingredients'] = [i for i in recipe.get('ingredients', '').split(', ') if i]
 
     else:
-        # Query for indonesian recipes
         query = """
-            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-            PREFIX v: <http://katsusort.org/vocab#>
+                PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                PREFIX v: <http://katsusort.org/vocab#>
 
-            SELECT ?recipe ?recipeLabel ?url ?loves ?totalIngredients 
-            ?totalSteps ?instructions ?ingredients ?cleanTitle
-            WHERE {
-                FILTER(STR(?recipe) = "http://katsusort.org/%s") .
-                ?recipe rdfs:label ?recipeLabel ;
-                       v:url ?url .
-                OPTIONAL { ?recipe v:loves ?loves }
-                OPTIONAL { ?recipe v:totalIngredients ?totalIngredients }
-                OPTIONAL { ?recipe v:totalSteps ?totalSteps }
-                OPTIONAL { ?recipe v:instructions ?instructions }
-                OPTIONAL { ?recipe v:ingredients ?ingredients }
-                OPTIONAL { ?recipe v:cleanTitle ?cleanTitle }
-            }
-        """ % recipe_uri
+                SELECT 
+                ?recipe ?recipeLabel ?url ?recordHealthLabel ?voteCount ?rating 
+                ?cuisineLabel ?courseLabel ?dietLabel ?dietInfo ?description
+                ?prepTimeInMinutes ?cookTimeInMinutes ?authorLabel ?categoryLabel 
+                ?ingredients ?instructions 
+                (GROUP_CONCAT(DISTINCT ?tagLabel; SEPARATOR="&") AS ?tags)
+                WHERE {
+                    FILTER(STR(?recipe) = "http://katsusort.org/%s") .
+                    ?recipe rdfs:label ?recipeLabel ;
+                        v:url ?url .
+                    OPTIONAL { 
+                        ?recipe v:recordHealth ?recordHealth .
+                        ?recordHealth rdfs:label ?recordHealthLabel 
+                    }
+                    OPTIONAL { ?recipe v:voteCount ?voteCount }
+                    OPTIONAL { ?recipe v:rating ?rating }
+                    OPTIONAL { 
+                        ?recipe v:cuisine ?cuisine .
+                        ?cuisine rdfs:label ?cuisineLabel 
+                    }
+                    OPTIONAL { 
+                        ?recipe v:course ?course .
+                        ?course rdfs:label ?courseLabel 
+                    }
+                    OPTIONAL { 
+                        ?recipe v:diet ?diet .
+                        ?diet rdfs:label ?dietLabel .
+                        ?diet rdfs:seeAlso ?dietInfo 
+                    }
+                    OPTIONAL { ?recipe v:description ?description }
+                    OPTIONAL { ?recipe v:prepTimeInMinutes ?prepTimeInMinutes }
+                    OPTIONAL { ?recipe v:cookTimeInMinutes ?cookTimeInMinutes }
+                    OPTIONAL { 
+                        ?recipe v:author ?author .
+                        ?author rdfs:label ?authorLabel 
+                    }
+                    OPTIONAL { 
+                        ?recipe v:category ?category .
+                        ?category rdfs:label ?categoryLabel 
+                    }
+                    OPTIONAL { ?recipe v:ingredients ?ingredients }
+                    OPTIONAL { ?recipe v:instructions ?instructions }
+                    OPTIONAL { 
+                        ?recipe v:tags ?tag .
+                        ?tag rdfs:label ?tagLabel 
+                    }
+                }
+                GROUP BY ?recipe ?recipeLabel ?url ?recordHealthLabel ?voteCount 
+                ?rating ?cuisineLabel ?courseLabel ?dietLabel ?dietInfo ?description
+                ?prepTimeInMinutes ?cookTimeInMinutes ?authorLabel ?categoryLabel 
+                ?ingredients ?instructions
+            """ % recipe_uri
 
         results = query_manager.execute_query(query)
-        if not results:
-            raise Exception("Recipe not found")
 
-        recipe = results[0]
-        context['instructions'] = recipe.get('instructions', '').split('\r\n')
-        context['ingredients'] = [i for i in recipe.get('ingredients', '').split(', ') if i]
-        context['is_indo_recipe'] = True
+        if results:
+            recipe = results[0]
+            context['instructions'] = recipe.get('instructions', '').split('\r\n')
+            context['ingredients'] = recipe.get('ingredients', '').split(', ')
+            context['tags'] = recipe.get('tags', '').split('&')
+            if recipe.get('rating'):
+                recipe['rating'] = round(float(recipe['rating']), 2)
 
     recipe['recipe'] = recipe['recipe'].replace('http://katsusort.org/', '')    
     context['recipe'] = recipe
+    context['is_indo_recipe'] = is_indo_recipe
     
     return render(request, 'search-result-details.html', context)
