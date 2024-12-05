@@ -112,7 +112,7 @@
                     </div>
         
                     <div class="grid md:grid-cols-3 gap-4 mb-6">
-                        <div class="bg-gray-50 p-3 rounded flex">
+                        <div class="bg-gray-50 p-3 rounded flex gap-1">
                             <span class="font-semibold">Cuisine:</span> 
                             {% if recipe.cuisineLabel %}
                             <a href="{{ recipe.cuisineInfo }}" target="_blank" class="text-blue-600 hover:underline">{{ recipe.cuisineLabel|default:"-" }}</a>
@@ -120,15 +120,15 @@
                             <p>-</p>
                             {% endif %}
                         </div>
-                        <div class="bg-gray-50 p-3 rounded flex">
+                        <div class="bg-gray-50 p-3 rounded flex gap-1">
                             <span class="font-semibold">Course:</span> 
                             {% if recipe.courseLabel %}
                             <a href="{{ recipe.courseInfo }}" target="_blank" class="text-blue-600 hover:underline">{{ recipe.courseLabel|default:"-" }}</a>
                             {% else %}
-                            {% endif %}
                             <p>-</p>
+                            {% endif %}
                         </div>
-                        <div class="bg-gray-50 p-3 rounded flex">
+                        <div class="bg-gray-50 p-3 rounded flex gap-1">
                             <span class="font-semibold">Diet:</span>
                             {% if recipe.dietLabel %}
                             <a href="{{ recipe.dietInfo }}" target="_blank" class="text-blue-600 hover:underline">{{ recipe.dietLabel|default:"-" }}</a>
