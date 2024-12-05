@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from katsu_app.sparql_func import SPARQLQueryManager
 from django.http import JsonResponse
+from difflib import SequenceMatcher
 
 # Create your views here.
 def show_main(request):
@@ -10,29 +11,49 @@ def get_recipe(request):
     endpoint = "http://localhost:7200/repositories/food-recipe"
     query_manager = SPARQLQueryManager(endpoint)
     recipe = request.GET.get('recipe', '').strip()
-    order = request.GET.get('order', 'ASC')
+    order = request.GET.get('order', '')
     
     query = """
         PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
         PREFIX v: <http://katsusort.org/vocab#>
 
-        SELECT ?recipe ?recipeLabel
+        SELECT ?recipe ?recipeLabel ?authorLabel
         WHERE {
             ?recipe rdfs:label ?recipeLabel ;
-                    v:url ?url .
+                    v:url ?url ;
+                    v:author ?author .
+            ?author rdfs:label ?authorLabel .
             FILTER(CONTAINS(LCASE(?recipeLabel), LCASE("%s"))) .
         }
-        ORDER BY %s(?recipeLabel)
-    """ % (recipe, order)
+        %s
+    """ % (recipe, f"ORDER BY {order}(?recipeLabel)" if order != "RELEVANCE" else "")
 
     results = query_manager.execute_query(query)
     for row in results:
         row['recipe'] = row['recipe'].replace('http://katsusort.org/', '')
 
+    if order == 'RELEVANCE':
+        results = rank_results(results, recipe)
+
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return JsonResponse({'recipes': results})
     else:
         return render(request, 'search-result.html', {'recipes': results, 'query_input': recipe})
+
+def rank_results(results, query):
+    def similarity(a, b):
+        return SequenceMatcher(None, a, b).ratio()
+    
+    ranked_results = []
+    for row in results:
+        recipe_label = row['recipeLabel'].lower()
+        query_lower = query.lower()
+        score = similarity(recipe_label, query_lower) * 100
+        row['relevanceScore'] = round(score, 2)
+        ranked_results.append(row)
+
+    ranked_results.sort(key=lambda x: x['relevanceScore'], reverse=True)
+    return ranked_results
 
 def get_recipe_details(request, recipe_uri):
     endpoint = "http://localhost:7200/repositories/food-recipe"

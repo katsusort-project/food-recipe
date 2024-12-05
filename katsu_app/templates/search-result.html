@@ -43,12 +43,13 @@
             </p>
             {% if recipes %}
                 <p class="text-lg italic font-semibold text-blue-700">
-                    Ditemukan <span class="text-l font-bold text-red-600">{{ recipes|length }}</span> resep yang mungkin sesuai.
+                    Ditemukan <span class="text-l font-bold text-red-600">{{ recipes|length }}</span> resep yang relevan dengan pencarian Anda.
                 </p>
             {% endif %}
         </div>
         <div class="flex space-x-2">
             <button id="sortAsc" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Sort A-Z</button>
+            <button id="sortRelevance" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Sort by Relevance</button>
             <button id="sortDesc" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Sort Z-A</button>
         </div>
     </div>
@@ -85,6 +86,9 @@
                                 <a href="${recipe.recipe}" class="text-blue-600 hover:text-blue-800 font-semibold text-lg">
                                     ${recipe.recipeLabel}
                                 </a>
+                                <p class="text-sm text-gray-600 mt-2">
+                                    by ${recipe.authorLabel || "Unknown"}
+                                </p>
                             </div>
                         `;
                     });
@@ -100,11 +104,15 @@
         }
 
         // Initial load
-        loadRecipes('ASC');
+        loadRecipes('RELEVANCE');
 
         // Sort buttons
         $('#sortAsc').click(function() {
             loadRecipes('ASC');
+        });
+
+        $('#sortRelevance').click(function() {
+            loadRecipes('RELEVANCE');
         });
 
         $('#sortDesc').click(function() {
