@@ -50,7 +50,7 @@ def get_recipe(request):
     # Prepare context for template
     response_data = {
         'recipes': list(paginated_results),
-        'total_pages': len(results),
+        'total_pages': paginator.num_pages,
         'current_page': paginated_results.number,
         'total_recipes': len(results),
         'query_input': recipe

@@ -43,7 +43,7 @@
             </p>
             {% if recipes %}
                 <p class="text-lg italic font-semibold text-blue-700">
-                    Ditemukan <span class="text-l font-bold text-red-600">{{ total_pages }}</span> resep yang relevan dengan pencarian Anda.
+                    Ditemukan <span class="text-l font-bold text-red-600">{{ total_recipes }}</span> resep yang relevan dengan pencarian Anda.
                 </p>
             {% endif %}
         </div>
@@ -98,14 +98,14 @@
                     recipeHtml = '<div class="grid grid-cols-1 md:grid-cols-2 gap-6">';
                     response.recipes.forEach(function(recipe) {
                         recipeHtml += `
-                            <div class="bg-white rounded-xl shadow-lg p-4 hover:shadow-xl transition-shadow duration-300 hover:border-2 hover:border-blue-500">
-                                <a href="${recipe.recipe}" class="text-blue-600 hover:text-blue-800 font-semibold text-lg">
+                            <a href="${recipe.recipe}" class="bg-white rounded-xl shadow-lg p-4 hover:shadow-xl transition-shadow duration-300 hover:border-2 hover:border-blue-500">
+                                <p class="text-blue-600 hover:text-blue-800 font-semibold text-lg">
                                     ${recipe.recipeLabel}
-                                </a>
+                                </p>
                                 <p class="text-sm text-gray-600 mt-2">
                                     by ${recipe.authorLabel || "Unknown"}
                                 </p>
-                            </div>
+                            </a>
                         `;
                     });
                     recipeHtml += '</div>';
