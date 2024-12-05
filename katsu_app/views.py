@@ -87,8 +87,8 @@ def get_recipe_details(request, recipe_uri):
         PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
         PREFIX v: <http://katsusort.org/vocab#>
 
-        SELECT ?recipe ?recipeLabel ?url ?loves ?totalIngredients 
-        ?totalSteps ?instructions ?ingredients ?cleanTitle
+        SELECT ?recipe ?recipeLabel ?url ?loves ?totalIngredients ?totalSteps 
+        ?instructions ?ingredients ?category ?categoryInfo ?categoryLabel ?cleanTitle
         WHERE {
             FILTER(STR(?recipe) = "http://katsusort.org/%s") .
             ?recipe rdfs:label ?recipeLabel ;
@@ -97,9 +97,11 @@ def get_recipe_details(request, recipe_uri):
                     v:totalIngredients ?totalIngredients ;
                     v:totalSteps ?totalSteps ;
                     v:instructions ?instructions ;
-                    v:ingredients ?ingredients .
-
-            OPTIONAL { ?recipe v:cleanTitle ?cleanTitle } .
+                    v:ingredients ?ingredients ;
+                    v:category ?category .
+            ?category rdfs:label ?categoryLabel .
+            OPTIONAL { ?category rdfs:seeAlso ?categoryInfo . }
+            OPTIONAL { ?recipe v:cleanTitle ?cleanTitle . } 
         }
     """ % recipe_uri
 
@@ -118,7 +120,7 @@ def get_recipe_details(request, recipe_uri):
 
             SELECT 
             ?recipe ?recipeLabel ?url ?recordHealthLabel ?voteCount ?rating 
-            ?cuisineLabel ?courseLabel ?dietLabel ?dietInfo ?description
+            ?cuisineLabel ?courseLabel ?courseInfo ?dietLabel ?dietInfo ?description
             ?prepTimeInMinutes ?cookTimeInMinutes ?authorLabel ?categoryLabel 
             ?ingredients ?instructions 
             (GROUP_CONCAT(DISTINCT ?tagLabel; SEPARATOR="&") AS ?tags)
@@ -140,11 +142,12 @@ def get_recipe_details(request, recipe_uri):
                     ?recipe v:course ?course .
                     ?course rdfs:label ?courseLabel 
                 }
+                OPTIONAL { ?course rdfs:seeAlso ?courseInfo . }
                 OPTIONAL { 
                     ?recipe v:diet ?diet .
                     ?diet rdfs:label ?dietLabel .
-                    ?diet rdfs:seeAlso ?dietInfo 
                 }
+                OPTIONAL { ?diet rdfs:seeAlso ?dietInfo . }
                 OPTIONAL { ?recipe v:description ?description }
                 OPTIONAL { ?recipe v:prepTimeInMinutes ?prepTimeInMinutes }
                 OPTIONAL { ?recipe v:cookTimeInMinutes ?cookTimeInMinutes }
@@ -164,7 +167,7 @@ def get_recipe_details(request, recipe_uri):
                 }
             }
             GROUP BY ?recipe ?recipeLabel ?url ?recordHealthLabel ?voteCount 
-            ?rating ?cuisineLabel ?courseLabel ?dietLabel ?dietInfo ?description
+            ?rating ?cuisineLabel ?courseLabel ?courseInfo ?dietLabel ?dietInfo ?description
             ?prepTimeInMinutes ?cookTimeInMinutes ?authorLabel ?categoryLabel 
             ?ingredients ?instructions
         """ % recipe_uri

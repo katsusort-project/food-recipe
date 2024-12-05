@@ -53,10 +53,17 @@
                         <a href="{{ recipe.url}}" target="_blank" class="text-blue-600 hover:underline italic">Original Recipe Website</a>
                     </div>
 
-                    <div class="grid md:grid-cols-3 gap-4 mb-6">
+                    <div class="grid md:grid-cols-2 gap-4 mb-6">
                         <div class="bg-gray-50 p-3 rounded">
                             <span class="font-semibold">Clean Title:</span> {{ recipe.cleanTitle|default:"-" }}
                         </div>
+                        <div class="bg-gray-50 p-3 rounded">
+                            <span class="font-semibold">Category:</span> 
+                            <a href="{{ recipe.categoryInfo }}" target="_blank" class="text-blue-600 hover:underline">{{ recipe.categoryLabel|default:"-" }}</a>
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-4 mb-6">
                         <div class="bg-gray-50 p-3 rounded">
                             <span class="font-semibold">Total Ingredients:</span> {{ recipe.totalIngredients|default:"-" }}
                         </div>
@@ -103,10 +110,12 @@
         
                     <div class="grid md:grid-cols-3 gap-4 mb-6">
                         <div class="bg-gray-50 p-3 rounded">
-                            <span class="font-semibold">Cuisine:</span> {{ recipe.cuisineLabel|default:"-" }}
+                            <span class="font-semibold">Cuisine:</span> 
+                            <a href="{{ recipe.cuisineInfo }}" target="_blank" class="text-blue-600 hover:underline">{{ recipe.cuisineLabel|default:"-" }}</a>
                         </div>
                         <div class="bg-gray-50 p-3 rounded">
-                            <span class="font-semibold">Course:</span> {{ recipe.courseLabel|default:"-" }}
+                            <span class="font-semibold">Course:</span> 
+                            <a href="{{ recipe.courseInfo }}" target="_blank" class="text-blue-600 hover:underline">{{ recipe.courseLabel|default:"-" }}</a>
                         </div>
                         <div class="bg-gray-50 p-3 rounded">
                             <span class="font-semibold">Diet:</span> 
