@@ -1,32 +1,39 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8 bg-gray-100 min-h-screen">
-    <div class="max-w-4xl mx-auto">
-        <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
+<div class="p-6 bg-gray-100 max-w-screen min-h-screen">
+    <div class=" mx-auto">
+        <div class="flex items-center w-full mb-6">
+            <!-- Logo / Title -->
             <a href="{% url 'katsu_app:show_main' %}">
-                <h1 class="text-3xl font-bold">
+                <h1 class="text-3xl font-bold mr-6">
                     <span class="text-blue-700">katsu</span><span class="text-red-700">Sort()</span>
                 </h1>
             </a>
-            
-            <form action="{% url 'katsu_app:get_recipe' %}" method="get" class="w-full max-w-xl">
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
+    
+            <!-- Search Bar & Filter -->
+            <div class="flex items-center space-x-4 w-full max-w-4xl">
+                <!-- Search Bar -->
+                <form action="{% url 'katsu_app:get_recipe' %}" method="get" class="flex flex-grow">
+                    <div class="relative flex-grow">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                        <input 
+                            type="text" 
+                            name="recipe" 
+                            placeholder="Search for recipes..." 
+                            value="{{ query_input }}"
+                            class="w-full pl-10 pr-4 py-2 rounded-l-lg border-t border-l border-b border-gray-300 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        >
                     </div>
-                    <input 
-                        type="text" 
-                        name="recipe"
-                        placeholder="Search for recipes..."
-                        value="{{ recipe.recipeLabel }}" 
-                        class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                    >
-                    <button type="submit" class="hidden">Search</button>
-                </div>
-            </form>
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-r-lg hover:bg-blue-700">
+                        Search
+                    </button>
+                </form>
+            </div>
         </div>
 
         <h1 class="text-3xl text-blue-700 text-center font-bold mb-6">{{ recipe.recipeLabel|default:"-" }}</h1>
