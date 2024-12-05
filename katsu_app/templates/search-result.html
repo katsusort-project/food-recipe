@@ -47,10 +47,35 @@
                 </p>
             {% endif %}
         </div>
-        <div class="flex space-x-2">
-            <button id="sortAsc" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Sort A-Z</button>
-            <button id="sortRelevance" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Sort by Relevance</button>
-            <button id="sortDesc" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Sort Z-A</button>
+
+        <!-- Dropdown filter -->
+        <div class="relative">
+            <button id="sortDropdown" class="flex items-center justify-between w-48 text-sm bg-blue-500 text-white px-4 py-2 rounded-xl hover:bg-blue-600">
+                <span id="currentSortLabel">Sort by Relevance</span>
+                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </button>
+            
+            <div id="sortMenu" class="absolute z-10 hidden w-48 bg-white rounded-lg shadow-lg border border-gray-200 mt-1">
+                <ul class="py-1">
+                    <li>
+                        <a href="#" id="sortRelevance" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 hover:text-blue-600">
+                            Sort by Relevance
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" id="sortAsc" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 hover:text-blue-600">
+                            Sort by A-Z
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" id="sortDesc" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 hover:text-blue-600">
+                            Sort by Z-A
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 
@@ -182,6 +207,47 @@
             if (currentPage < totalPages) {
                 loadRecipes(currentOrder, currentPage + 1);
             }
+        });
+    });
+
+    $(document).ready(function() {
+        // Dropdown toggle
+        $('#sortDropdown').click(function(e) {
+            $('#sortMenu').toggleClass('hidden');
+            e.stopPropagation();
+        });
+
+        // Close dropdown when clicking outside
+        $(document).click(function() {
+            $('#sortMenu').addClass('hidden');
+        });
+
+        // Prevent dropdown from closing when clicking inside
+        $('#sortMenu').click(function(e) {
+            e.stopPropagation();
+        });
+
+        // Sort option selection
+        $('#sortRelevance, #sortAsc, #sortDesc').click(function(e) {
+            e.preventDefault();
+            
+            // Update dropdown label
+            const sortLabel = $(this).text();
+            $('#currentSortLabel').text(sortLabel);
+            
+            // Hide dropdown
+            $('#sortMenu').addClass('hidden');
+            
+            // Determine sort order
+            let sortOrder = 'RELEVANCE';
+            if ($(this).attr('id') === 'sortAsc') {
+                sortOrder = 'ASC';
+            } else if ($(this).attr('id') === 'sortDesc') {
+                sortOrder = 'DESC';
+            }
+            
+            // Trigger recipe loading with selected sort
+            loadRecipes(sortOrder, 1);
         });
     });
 </script>
