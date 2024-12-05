@@ -194,12 +194,9 @@ def get_recipe_details(request, recipe_uri):
 
 def calculate_stars(rating):
     full_stars = int(rating)
-    half_star = 1 if rating - full_stars >= 0.5 else 0
-    empty_stars = 5 - full_stars - half_star
+    empty_stars = 5 - full_stars
     
     stars = ['★'] * full_stars
-    if half_star:
-        stars.append('½')
     stars.extend(['☆'] * empty_stars)
     
     return {
