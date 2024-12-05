@@ -43,7 +43,7 @@
             </p>
             {% if recipes %}
                 <p class="text-lg italic font-semibold text-blue-700">
-                    Ditemukan <span class="text-l font-bold text-red-600">{{ recipes|length }}</span> resep yang relevan dengan pencarian Anda.
+                    Ditemukan <span class="text-l font-bold text-red-600">{{ total_pages }}</span> resep yang relevan dengan pencarian Anda.
                 </p>
             {% endif %}
         </div>
@@ -60,22 +60,38 @@
         <div id="recipeContainer" class="flex-1 min-w-[65%]">
             <!-- Recipes will be loaded here -->
         </div>
+
+        <!-- Pagination Controls -->
+        <div id="paginationContainer" class="w-full flex justify-center items-center space-x-2 mt-6">
+            <button id="prevPage" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50" disabled>Previous</button>
+            <span id="pageInfo" class="text-gray-700">Page <span id="currentPage">1</span> of <span id="totalPages">1</span></span>
+            <button id="nextPage" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50" disabled>Next</button>
+        </div>
     </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
-        async function loadRecipes(order) {
+        let currentPage = 1;
+        let totalPages = 1;
+        let currentOrder = 'RELEVANCE';
+        let currentQuery = '{{ query_input }}';
+
+        async function loadRecipes(order, page) {
             try {
                 const response = await $.ajax({
                     url: '{% url "katsu_app:get_recipe" %}',
                     data: {
-                        'recipe': '{{ query_input }}',
-                        'order': order
+                        'recipe': currentQuery,
+                        'order': order,
+                        'page': page
                     },
                     dataType: 'json'
                 });
+
+                currentPage = response.current_page;
+                totalPages = response.total_pages;
 
                 let recipeHtml = '';
                 if (response.recipes.length > 0) {
@@ -96,27 +112,53 @@
                 } else {
                     recipeHtml = '<p class="text-gray-600 text-center">Tidak ada resep yang cocok dengan pencarian Anda.</p>';
                 }
+
                 $('#recipeContainer').html(recipeHtml);
+                updatePaginationControls();
             } catch (error) {
                 console.error('Error loading recipes:', error);
                 $('#recipeContainer').html('<p class="text-red-600 text-center">Terjadi kesalahan saat memuat resep.</p>');
             }
         }
 
+        function updatePaginationControls() {
+            $('#currentPage').text(currentPage);
+            $('#totalPages').text(totalPages);
+
+            $('#prevPage').prop('disabled', currentPage === 1);
+            $('#nextPage').prop('disabled', currentPage === totalPages);
+        }
+
         // Initial load
-        loadRecipes('RELEVANCE');
+        loadRecipes('RELEVANCE', 1);
 
         // Sort buttons
         $('#sortAsc').click(function() {
-            loadRecipes('ASC');
+            currentOrder = 'ASC';
+            loadRecipes('ASC', 1);
         });
 
         $('#sortRelevance').click(function() {
-            loadRecipes('RELEVANCE');
+            currentOrder = 'RELEVANCE';
+            loadRecipes('RELEVANCE', 1);
         });
 
         $('#sortDesc').click(function() {
-            loadRecipes('DESC');
+            currentOrder = 'DESC';
+            loadRecipes('DESC', 1);
+        });
+
+        // Pagination buttons
+        $('#prevPage').click(function() {
+            if (currentPage > 1) {
+                loadRecipes(currentOrder, currentPage - 1);
+            }
+        });
+
+        $('#nextPage').click(function() {
+            if (currentPage < totalPages) {
+                loadRecipes(currentOrder, currentPage + 1);
+            }
         });
     });
 </script>

@@ -2,6 +2,7 @@ from django.shortcuts import render
 from katsu_app.sparql_func import SPARQLQueryManager
 from django.http import JsonResponse
 from difflib import SequenceMatcher
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 # Create your views here.
 def show_main(request):
@@ -12,7 +13,9 @@ def get_recipe(request):
     query_manager = SPARQLQueryManager(endpoint)
     recipe = request.GET.get('recipe', '').strip()
     order = request.GET.get('order', '')
-    
+    page = request.GET.get('page', 1)
+    recipes_per_page = 20  # Number of recipes per page
+
     query = """
         PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
         PREFIX v: <http://katsusort.org/vocab#>
@@ -35,10 +38,28 @@ def get_recipe(request):
     if order == 'RELEVANCE':
         results = rank_results(results, recipe)
 
+    # Create Paginator
+    paginator = Paginator(results, recipes_per_page)
+    try:
+        paginated_results = paginator.page(page)
+    except PageNotAnInteger:
+        paginated_results = paginator.page(1)
+    except EmptyPage:
+        paginated_results = paginator.page(paginator.num_pages)
+
+    # Prepare context for template
+    response_data = {
+        'recipes': list(paginated_results),
+        'total_pages': len(results),
+        'current_page': paginated_results.number,
+        'total_recipes': len(results),
+        'query_input': recipe
+    }
+
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return JsonResponse({'recipes': results})
+        return JsonResponse(response_data)
     else:
-        return render(request, 'search-result.html', {'recipes': results, 'query_input': recipe})
+        return render(request, 'search-result.html', response_data)
 
 def rank_results(results, query):
     def similarity(a, b):
