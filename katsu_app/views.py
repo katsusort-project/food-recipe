@@ -24,8 +24,11 @@ def get_recipe(request):
         WHERE {
             ?recipe rdfs:label ?recipeLabel ;
                     v:url ?url ;
-                    v:author ?author .
-            ?author rdfs:label ?authorLabel .
+                    
+            OPTIONAL {
+                ?recipe v:author ?author .
+                ?author rdfs:label ?authorLabel .
+            }
             FILTER(CONTAINS(LCASE(?recipeLabel), LCASE("%s"))) .
         }
         %s
