@@ -83,12 +83,25 @@
                             </div>
                         </div>
 
-                        <div class="mb-6">
-                            <h3 class="text-lg font-semibold mb-2">Ingredients:</h3>
-                            <div class="bg-gray-50 p-4 rounded">
-                                {% for ingredient in ingredients %}
-                                    <p class="text-gray-700">• {{ ingredient|default:"-" }}</p>
-                                {% endfor %}
+                        <div class="grid md:grid-cols-2 gap-4 mb-6">
+                            <!-- Ingredients -->
+                            <div class="mb-6">
+                                <h3 class="text-lg font-semibold mb-2">Ingredients:</h3>
+                                <div class="bg-gray-50 p-4 rounded">
+                                    {% for ingredient in ingredients %}
+                                        <p class="text-gray-700">• {{ ingredient|default:"-" }}</p>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        
+                            <!-- Cleaned Ingredients -->
+                            <div class="mb-6">
+                                <h3 class="text-lg font-semibold mb-2">Cleaned Ingredients:</h3>
+                                <div class="bg-gray-50 p-4 rounded">
+                                    {% for clean_ingredient in clean_ingredients %}
+                                        <p class="text-gray-700">• {{ clean_ingredient|default:"-" }}</p>
+                                    {% endfor %}
+                                </div>
                             </div>
                         </div>
 

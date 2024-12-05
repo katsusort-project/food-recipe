@@ -93,6 +93,7 @@ def get_recipe_details(request, recipe_uri):
 
         SELECT ?recipe ?recipeLabel ?url ?loves ?totalIngredients ?totalSteps 
         ?instructions ?ingredients ?category ?categoryInfo ?categoryLabel ?cleanTitle
+        ?cleanIngredients
         WHERE {
             FILTER(STR(?recipe) = "http://katsusort.org/%s") .
             ?recipe rdfs:label ?recipeLabel ;
@@ -102,7 +103,8 @@ def get_recipe_details(request, recipe_uri):
                     v:totalSteps ?totalSteps ;
                     v:instructions ?instructions ;
                     v:ingredients ?ingredients ;
-                    v:category ?category .
+                    v:category ?category ;
+                    v:cleanIngredients ?cleanIngredients .
             ?category rdfs:label ?categoryLabel .
             OPTIONAL { ?category rdfs:seeAlso ?categoryInfo . }
             OPTIONAL { ?recipe v:cleanTitle ?cleanTitle . } 
@@ -114,6 +116,7 @@ def get_recipe_details(request, recipe_uri):
         recipe = results[0]
         context['instructions'] = recipe.get('instructions', '').split('\r\n')
         context['ingredients'] = [i for i in recipe.get('ingredients', '').split(', ') if i]
+        context['clean_ingredients'] = [i.title() for i in recipe.get('cleanIngredients', '').split(' , ') if i]
 
     else:
         # Query for non-indonesian recipes
