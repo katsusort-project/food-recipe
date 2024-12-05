@@ -126,7 +126,7 @@ def get_recipe_details(request, recipe_uri):
             ?recipe ?recipeLabel ?url ?recordHealthLabel ?voteCount ?rating 
             ?cuisineLabel ?cuisineInfo ?courseLabel ?courseInfo ?dietLabel ?dietInfo ?description
             ?prepTimeInMinutes ?cookTimeInMinutes ?authorLabel ?categoryLabel 
-            ?ingredients ?instructions 
+            ?ingredients ?instructions ?authorInfo
             (GROUP_CONCAT(DISTINCT ?tagLabel; SEPARATOR="&") AS ?tags)
             WHERE {
                 FILTER(STR(?recipe) = "http://katsusort.org/%s") .
@@ -160,7 +160,8 @@ def get_recipe_details(request, recipe_uri):
                 OPTIONAL { ?recipe v:cookTimeInMinutes ?cookTimeInMinutes }
                 OPTIONAL { 
                     ?recipe v:author ?author .
-                    ?author rdfs:label ?authorLabel 
+                    ?author rdfs:label ?authorLabel .
+                    ?author rdfs:seeAlso ?authorInfo
                 }
                 OPTIONAL { 
                     ?recipe v:category ?category .
@@ -176,7 +177,7 @@ def get_recipe_details(request, recipe_uri):
             GROUP BY ?recipe ?recipeLabel ?url ?recordHealthLabel ?voteCount 
             ?rating ?cuisineLabel ?cuisineInfo ?courseLabel ?courseInfo ?dietLabel ?dietInfo ?description
             ?prepTimeInMinutes ?cookTimeInMinutes ?authorLabel ?categoryLabel 
-            ?ingredients ?instructions
+            ?ingredients ?instructions ?authorInfo
         """ % recipe_uri
 
         results = query_manager.execute_query(query)

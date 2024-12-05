@@ -36,8 +36,17 @@
             </div>
         </div>
 
-        <h1 class="text-3xl text-blue-700 text-center font-bold mb-1">{{ recipe.recipeLabel|default:"-" }}</h1>
-        <h1 class="text-gray-600 text-sm text-2xl text-center mb-6">by {{ recipe.authorLabel|default:"Unknown Author" }}</h1>
+        {% if recipe.authorLabel %}
+            <h1 class="text-3xl text-blue-700 text-center font-bold mb-1">{{ recipe.recipeLabel|default:"-" }}</h1>
+            <h1 class="text-gray-600 text-sm text-xl text-center mb-6">
+                by 
+                <a href="{{ recipe.authorInfo }}" target="_blank" class="text-gray-600 hover:text-red-700">
+                    {{ recipe.authorLabel|default:"Unknown" }}
+                </a>
+            </h1>
+        {% else %}
+            <h1 class="text-3xl text-blue-700 text-center font-bold mb-6">{{ recipe.recipeLabel|default:"-" }}</h1>
+        {% endif %}
 
         <div class="flex items-center justify-center min-h-screen bg-gray-100">
             <div class="bg-white rounded-xl shadow-lg w-3/4 overflow-hidden">
