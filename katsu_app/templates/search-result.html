@@ -39,11 +39,11 @@
     <div class="flex justify-between items-center mb-4">
         <div>
             <p class="text-lg italic font-semibold text-blue-700 mb-1">
-                Hasil pencarian untuk "<span class="font-bold">{{ query_input }}"</span>
+                Search results for "<span class="font-bold">{{ query_input }}"</span>
             </p>
             {% if recipes %}
                 <p class="text-lg italic font-semibold text-blue-700">
-                    Ditemukan <span class="text-l font-bold text-red-600">{{ total_recipes }}</span> resep yang relevan dengan pencarian Anda.
+                    Found total <span class="text-l font-bold text-red-600">{{ total_recipes }}</span> relevant to your search
                 </p>
             {% endif %}
         </div>
@@ -69,7 +69,11 @@
                 </svg>
                 <span class="mr-2">Prev</span>
             </button>
-            <span id="pageInfo" class="text-gray-700">Page <span id="currentPage" class="font-semibold">1</span> of <span id="totalPages" class="font-semibold">1</span></span>
+            <span id="pageInfo" class="text-gray-700 flex items-center space-x-2">
+                Page 
+                <input id="pageInput" value="1" min="1" class="w-10 text-center border border-gray-300 rounded focus:ring focus:ring-blue-300 focus:outline-none ml-2 mr-2">
+                of <span id="totalPages" class="font-semibold">1</span>
+            </span>
             <button id="nextPage" class="flex justify-center items-center px-3 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 disabled:opacity-50" disabled>
                 <span class="ml-2">Next</span>
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
@@ -132,12 +136,21 @@
         }
 
         function updatePaginationControls() {
-            $('#currentPage').text(currentPage);
+            $('#pageInput').val(currentPage);
             $('#totalPages').text(totalPages);
 
             $('#prevPage').prop('disabled', currentPage === 1);
             $('#nextPage').prop('disabled', currentPage === totalPages);
         }
+
+        $('#pageInput').on('change', function() {
+            let newPage = parseInt($(this).val());
+            if (newPage >= 1 && newPage <= totalPages) {
+                loadRecipes(currentOrder, newPage);
+            } else {
+                $(this).val(currentPage);
+            }
+        });
 
         // Initial load
         loadRecipes('RELEVANCE', 1);
