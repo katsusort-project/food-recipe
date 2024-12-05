@@ -105,21 +105,36 @@
                                 <span class="text-gray-600">({{ recipe.voteCount|default:"-" }} votes)</span>
                             </div>
                         </div>
+                        {% if recipe.url %}
                         <a href="{{ recipe.url }}" target="_blank" class="text-blue-700 italic hover:underline">Original Recipe Website</a>
+                        {% endif %}
+
                     </div>
         
                     <div class="grid md:grid-cols-3 gap-4 mb-6">
-                        <div class="bg-gray-50 p-3 rounded">
+                        <div class="bg-gray-50 p-3 rounded flex">
                             <span class="font-semibold">Cuisine:</span> 
+                            {% if recipe.cuisineLabel %}
                             <a href="{{ recipe.cuisineInfo }}" target="_blank" class="text-blue-600 hover:underline">{{ recipe.cuisineLabel|default:"-" }}</a>
+                            {% else %}
+                            <p>-</p>
+                            {% endif %}
                         </div>
-                        <div class="bg-gray-50 p-3 rounded">
+                        <div class="bg-gray-50 p-3 rounded flex">
                             <span class="font-semibold">Course:</span> 
+                            {% if recipe.courseLabel %}
                             <a href="{{ recipe.courseInfo }}" target="_blank" class="text-blue-600 hover:underline">{{ recipe.courseLabel|default:"-" }}</a>
+                            {% else %}
+                            {% endif %}
+                            <p>-</p>
                         </div>
-                        <div class="bg-gray-50 p-3 rounded">
-                            <span class="font-semibold">Diet:</span> 
+                        <div class="bg-gray-50 p-3 rounded flex">
+                            <span class="font-semibold">Diet:</span>
+                            {% if recipe.dietLabel %}
                             <a href="{{ recipe.dietInfo }}" target="_blank" class="text-blue-600 hover:underline">{{ recipe.dietLabel|default:"-" }}</a>
+                            {% else %}
+                            <p>-</p>
+                            {% endif %}
                         </div>
                     </div>
         
