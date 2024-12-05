@@ -187,9 +187,22 @@ def get_recipe_details(request, recipe_uri):
             context['tags'] = recipe.get('tags', '').split('&')
             if recipe.get('rating'):
                 recipe['rating'] = round(float(recipe['rating']), 2)
+                context['recipe_stars'] = calculate_stars(recipe['rating'])
 
     recipe['recipe'] = recipe['recipe'].replace('http://katsusort.org/', '')    
     context['recipe'] = recipe
     context['is_indo_recipe'] = is_indo_recipe
     
     return render(request, 'search-result-details.html', context)
+
+def calculate_stars(rating):
+    full_stars = int(rating)
+    empty_stars = 5 - full_stars
+    
+    stars = ['★'] * full_stars
+    stars.extend(['☆'] * empty_stars)
+    
+    return {
+        'star_display': ''.join(stars),
+        'formatted_rating': f'{rating:.1f}'
+    }
