@@ -1,44 +1,37 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<style>
-    @keyframes rotate {
-        0% {
-            transform: rotate(0deg) translateX(50px) rotate(0deg) translateY(-50px);
-        }
-        100% {
-            transform: rotate(360deg) translateX(-70px) rotate(-360deg);
-        }
-    }
-    
-    .ellipse-1 {
-        animation: rotate 60s linear infinite;
-    }
-    
-    .ellipse-2 {
-        animation: rotate 60s linear infinite reverse;
-    }
-</style>
-
 <div class="relative flex w-screen h-screen justify-center items-center bg-gray-200 overflow-hidden">
     <!-- Background SVG -->
     <div class="absolute inset-0 z-0">
-        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev/svgjs" viewBox="0 0 800 450" opacity="1" class="w-full h-full">
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev/svgjs" viewBox="0 0 800 450" opacity="1">
             <defs>
                 <filter id="bbblurry-filter" x="-100%" y="-100%" width="400%" height="400%" filterUnits="objectBoundingBox" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-                    <feGaussianBlur stdDeviation="48" x="0%" y="0%" width="100%" height="100%" in="SourceGraphic" edgeMode="none" result="blur"></feGaussianBlur>
+                    <feGaussianBlur stdDeviation="40" x="0%" y="0%" width="100%" height="100%" in="SourceGraphic" edgeMode="none" result="blur"></feGaussianBlur>
                 </filter>
             </defs>
             <g filter="url(#bbblurry-filter)">
-                <ellipse class="ellipse-1" rx="101" ry="123.5" cx="400" cy="225" fill="hsla(0, 100%, 50%, 0.48)"></ellipse>
-                <ellipse class="ellipse-2" rx="101" ry="123.5" cx="400" cy="225" fill="hsla(244, 100%, 50%, 0.46)"></ellipse>
+                <ellipse rx="150" ry="150" fill="hsla(0, 100%, 50%, 0.5)">
+                    <animateMotion 
+                        dur="15s" 
+                        repeatCount="indefinite"
+                        path="M 400,225 m -100,0 a 100,100 0 1,0 200,0 a 100,100 0 1,0 -200,0"
+                    />
+                </ellipse>
+                <ellipse rx="150" ry="150" fill="hsla(240, 100%, 50%, 0.5)">
+                    <animateMotion 
+                        dur="15s" 
+                        repeatCount="indefinite"
+                        path="M 400,225 m 100,0 a -100,-100 0 1,0 -200,0 a -100,-100 0 1,0 200,0"
+                    />
+                </ellipse>
             </g>
         </svg>
     </div>
 
     <!-- Content -->
     <div class="flex flex-col items-center space-y-6 z-10">
-        <h1 class="text-2xl font-bold text-white">
+        <h1 class="text-2xl font-bold text-gray-200">
             <span class="text-blue-700">katsu</span><span class="text-red-700">Sort()</span> Recipe Search Engine
         </h1> 
         
