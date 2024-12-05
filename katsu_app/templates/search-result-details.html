@@ -39,8 +39,8 @@
         {% if recipe.authorLabel %}
             <h1 class="text-3xl text-blue-700 text-center font-bold mb-1">{{ recipe.recipeLabel|default:"-" }}</h1>
             <h1 class="text-gray-600 text-sm text-xl text-center mb-6">
-                by 
-                <a href="{{ recipe.authorInfo }}" target="_blank" class="text-gray-600 hover:text-red-700">
+                <span class="font-semibold">by</span> 
+                <a href="{{ recipe.authorInfo }}" target="_blank" class="text-blue-600 hover:underline">
                     {{ recipe.authorLabel|default:"Unknown" }}
                 </a>
             </h1>
@@ -61,7 +61,7 @@
                                 <span>{{ recipe.loves|default:"-" }} Loves</span>
                             </div>
                             
-                            <a href="{{ recipe.url}}" target="_blank" class="text-blue-600 hover:underline italic">Original Recipe Website</a>
+                            <a href="{{ recipe.url }}" target="_blank" class="text-blue-600 hover:underline italic">Original Recipe Website</a>
                         </div>
 
                         <div class="grid md:grid-cols-2 gap-4 mb-6">
@@ -92,83 +92,99 @@
                             </div>
                         </div>
 
-                    <div class="mb-6">
-                        <h3 class="text-lg font-semibold mb-2">Instructions:</h3>
-                        <div class="bg-gray-50 p-4 rounded">
-                            {% for instruction in instructions %}
-                                <p class="text-gray-700">{{ instruction|default:"-" }}</p>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-            {% else %}
-                <!-- Non-Indonesian recipe details -->
-                <div class="p-6">
-                    <div class="flex flex-col md:flex-row justify-between items-start mb-4">
-                        <div class="flex flex-col mb-4 md:mb-0">
-                            <div class="text-yellow-500">
-                                {{ recipe_stars.star_display|safe }}
-                                <span class="text-gray-600">{{ recipe.rating|default:"-" }}/5</span>
-                                <span class="text-gray-600">({{ recipe.voteCount|default:"-" }} votes)</span>
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold mb-2">Instructions:</h3>
+                            <div class="bg-gray-50 p-4 rounded">
+                                {% for instruction in instructions %}
+                                    <p class="text-gray-700">{{ instruction|default:"-" }}</p>
+                                {% endfor %}
                             </div>
                         </div>
-                        {% if recipe.url %}
-                        <a href="{{ recipe.url }}" target="_blank" class="text-blue-700 italic hover:underline">Original Recipe Website</a>
+                    </div>
+                {% else %}
+                    <!-- Non-Indonesian recipe details -->
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row justify-between items-start mb-4">
+                            <div class="flex flex-col mb-4 md:mb-0">
+                                <div class="text-yellow-500">
+                                    {{ recipe_stars.star_display|safe }}
+                                    <span class="text-gray-600">{{ recipe.rating|default:"-" }}/5</span>
+                                    <span class="text-gray-600">({{ recipe.voteCount|default:"-" }} votes)</span>
+                                </div>
+                            </div>
+                            {% if recipe.url %}
+                            <a href="{{ recipe.url }}" target="_blank" class="text-blue-700 italic hover:underline">Original Recipe Website</a>
+                            {% endif %}
+
+                        </div>
+            
+                        <div class="grid md:grid-cols-3 gap-4 mb-6">
+                            <div class="bg-gray-50 p-3 rounded flex gap-1">
+                                <span class="font-semibold">Cuisine:</span> 
+                                {% if recipe.cuisineLabel %}
+                                <a href="{{ recipe.cuisineInfo }}" target="_blank" class="text-blue-600 hover:underline">{{ recipe.cuisineLabel|default:"-" }}</a>
+                                {% else %}
+                                <p>-</p>
+                                {% endif %}
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded flex gap-1">
+                                <span class="font-semibold">Course:</span> 
+                                {% if recipe.courseLabel %}
+                                <a href="{{ recipe.courseInfo }}" target="_blank" class="text-blue-600 hover:underline">{{ recipe.courseLabel|default:"-" }}</a>
+                                {% else %}
+                                <p>-</p>
+                                {% endif %}
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded flex gap-1">
+                                <span class="font-semibold">Diet:</span>
+                                {% if recipe.dietLabel %}
+                                <a href="{{ recipe.dietInfo }}" target="_blank" class="text-blue-600 hover:underline">{{ recipe.dietLabel|default:"-" }}</a>
+                                {% else %}
+                                <p>-</p>
+                                {% endif %}
+                            </div>
+                        </div>
+            
+                        <div class="grid md:grid-cols-2 gap-4 mb-6">
+                            <div class="bg-gray-50 p-3 rounded">
+                                <span class="font-semibold">Prep Time:</span> {{ recipe.prepTimeInMinutes|default:"-" }} mins
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded">
+                                <span class="font-semibold">Cook Time:</span> {{ recipe.cookTimeInMinutes|default:"-" }} mins
+                            </div>
+                        </div>
+
+                        {% if recipe.englishVersionRecipe %}
+                            <div class="mb-6">
+                                <div class="bg-gray-50 p-3 rounded">
+                                    <span class="font-semibold">Recipe (English Version):</span> 
+                                    <a href="{{ redirect_english_version }}" target="_blank" class="text-blue-600 hover:underline">{{ english_recipe.recipeLabel|default:"-" }}</a>
+                                </div>
+                            </div>
+                        {% elif recipe.hindiVersionRecipe %}
+                            <div class="mb-6">
+                                <div class="bg-gray-50 p-3 rounded">
+                                    <span class="font-semibold">Recipe (Hindi Version):</span> 
+                                    <a href="{{ redirect_hindi_version }}" target="_blank" class="text-blue-600 hover:underline">{{ hindi_recipe.recipeLabel|default:"-" }}</a>
+                                </div>
+                            </div>
                         {% endif %}
 
-                    </div>
-        
-                    <div class="grid md:grid-cols-3 gap-4 mb-6">
-                        <div class="bg-gray-50 p-3 rounded flex gap-1">
-                            <span class="font-semibold">Cuisine:</span> 
-                            {% if recipe.cuisineLabel %}
-                            <a href="{{ recipe.cuisineInfo }}" target="_blank" class="text-blue-600 hover:underline">{{ recipe.cuisineLabel|default:"-" }}</a>
-                            {% else %}
-                            <p>-</p>
-                            {% endif %}
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold mb-2">Description:</h3>
+                            <div class="bg-gray-50 p-4 rounded">
+                                {{ recipe.description|default:"No description available." }}
+                            </div>
                         </div>
-                        <div class="bg-gray-50 p-3 rounded flex gap-1">
-                            <span class="font-semibold">Course:</span> 
-                            {% if recipe.courseLabel %}
-                            <a href="{{ recipe.courseInfo }}" target="_blank" class="text-blue-600 hover:underline">{{ recipe.courseLabel|default:"-" }}</a>
-                            {% else %}
-                            <p>-</p>
-                            {% endif %}
+            
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold mb-2">Ingredients:</h3>
+                            <div class="bg-gray-50 p-4 rounded">
+                                {% for ingredient in ingredients %}
+                                    <p class="text-gray-700">• {{ ingredient|default:"-" }}</p>
+                                {% endfor %}
+                            </div>
                         </div>
-                        <div class="bg-gray-50 p-3 rounded flex gap-1">
-                            <span class="font-semibold">Diet:</span>
-                            {% if recipe.dietLabel %}
-                            <a href="{{ recipe.dietInfo }}" target="_blank" class="text-blue-600 hover:underline">{{ recipe.dietLabel|default:"-" }}</a>
-                            {% else %}
-                            <p>-</p>
-                            {% endif %}
-                        </div>
-                    </div>
-        
-                    <div class="grid md:grid-cols-2 gap-4 mb-6">
-                        <div class="bg-gray-50 p-3 rounded">
-                            <span class="font-semibold">Prep Time:</span> {{ recipe.prepTimeInMinutes|default:"-" }} mins
-                        </div>
-                        <div class="bg-gray-50 p-3 rounded">
-                            <span class="font-semibold">Cook Time:</span> {{ recipe.cookTimeInMinutes|default:"-" }} mins
-                        </div>
-                    </div>
-
-                    <div class="mb-6">
-                        <h3 class="text-lg font-semibold mb-2">Description:</h3>
-                        <div class="bg-gray-50 p-4 rounded">
-                            {{ recipe.description|default:"No description available." }}
-                        </div>
-                    </div>
-        
-                    <div class="mb-6">
-                        <h3 class="text-lg font-semibold mb-2">Ingredients:</h3>
-                        <div class="bg-gray-50 p-4 rounded">
-                            {% for ingredient in ingredients %}
-                                <p class="text-gray-700">• {{ ingredient|default:"-" }}</p>
-                            {% endfor %}
-                        </div>
-                    </div>
 
                         <div class="mb-6">
                             <h3 class="text-lg font-semibold mb-2">Instructions:</h3>

@@ -126,7 +126,7 @@ def get_recipe_details(request, recipe_uri):
             ?recipe ?recipeLabel ?url ?recordHealthLabel ?voteCount ?rating 
             ?cuisineLabel ?cuisineInfo ?courseLabel ?courseInfo ?dietLabel ?dietInfo ?description
             ?prepTimeInMinutes ?cookTimeInMinutes ?authorLabel ?categoryLabel 
-            ?ingredients ?instructions ?authorInfo
+            ?ingredients ?instructions ?authorInfo ?englishVersionRecipe ?hindiVersionRecipe
             (GROUP_CONCAT(DISTINCT ?tagLabel; SEPARATOR="&") AS ?tags)
             WHERE {
                 FILTER(STR(?recipe) = "http://katsusort.org/%s") .
@@ -173,11 +173,13 @@ def get_recipe_details(request, recipe_uri):
                     ?recipe v:tags ?tag .
                     ?tag rdfs:label ?tagLabel 
                 }
+                OPTIONAL { ?recipe v:englishVersion ?englishVersionRecipe . }
+                OPTIONAL { ?recipe ^v:englishVersion ?hindiVersionRecipe . }
             }
             GROUP BY ?recipe ?recipeLabel ?url ?recordHealthLabel ?voteCount 
             ?rating ?cuisineLabel ?cuisineInfo ?courseLabel ?courseInfo ?dietLabel ?dietInfo ?description
             ?prepTimeInMinutes ?cookTimeInMinutes ?authorLabel ?categoryLabel 
-            ?ingredients ?instructions ?authorInfo
+            ?ingredients ?instructions ?authorInfo ?englishVersionRecipe ?hindiVersionRecipe
         """ % recipe_uri
 
         results = query_manager.execute_query(query)
@@ -187,6 +189,39 @@ def get_recipe_details(request, recipe_uri):
             context['instructions'] = recipe.get('instructions', '').split('\r\n')
             context['ingredients'] = recipe.get('ingredients', '').split(', ')
             context['tags'] = recipe.get('tags', '').split('&')
+            if recipe.get('englishVersionRecipe', ''):
+                query2 = """
+                    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                    PREFIX v: <http://katsusort.org/vocab#>
+
+                    SELECT ?recipe ?recipeLabel ?url 
+                    WHERE {
+                        ?recipe rdfs:label ?recipeLabel ;
+                                v:url ?url .
+                        FILTER(STR(?recipe) = "%s") .
+                    }
+                    """ % recipe.get('englishVersionRecipe', '')
+                res = query_manager.execute_query(query2)
+                if res:
+                    context['english_recipe'] = res[0]
+                    context['redirect_english_version'] = "../" + recipe.get('englishVersionRecipe', '').replace('http://katsusort.org/', '')
+            elif recipe.get('hindiVersionRecipe', ''):
+                query2 = """
+                    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                    PREFIX v: <http://katsusort.org/vocab#>
+
+                    SELECT ?recipe ?recipeLabel ?url 
+                    WHERE {
+                        ?recipe rdfs:label ?recipeLabel ;
+                                v:url ?url .
+                        FILTER(STR(?recipe) = "%s") .
+                    }
+                    """ % recipe.get('hindiVersionRecipe', '')
+                res = query_manager.execute_query(query2)
+                if res:
+                    context['hindi_recipe'] = res[0]
+                    context['redirect_hindi_version'] = "../" + recipe.get('hindiVersionRecipe', '').replace('http://katsusort.org/', '')
+
             if recipe.get('rating'):
                 recipe['rating'] = round(float(recipe['rating']), 2)
                 context['recipe_stars'] = calculate_stars(recipe['rating'])
