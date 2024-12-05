@@ -202,7 +202,6 @@ def calculate_stars(rating):
     
     stars = ['★'] * full_stars
     stars.extend(['☆'] * empty_stars)
-    print(''.join(stars))
     
     return {
         'star_display': ''.join(stars),
