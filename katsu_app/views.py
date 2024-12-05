@@ -123,7 +123,7 @@ def get_recipe_details(request, recipe_uri):
 
             SELECT 
             ?recipe ?recipeLabel ?url ?recordHealthLabel ?voteCount ?rating 
-            ?cuisineLabel ?courseLabel ?courseInfo ?dietLabel ?dietInfo ?description
+            ?cuisineLabel ?cuisineInfo ?courseLabel ?courseInfo ?dietLabel ?dietInfo ?description
             ?prepTimeInMinutes ?cookTimeInMinutes ?authorLabel ?categoryLabel 
             ?ingredients ?instructions 
             (GROUP_CONCAT(DISTINCT ?tagLabel; SEPARATOR="&") AS ?tags)
@@ -139,7 +139,10 @@ def get_recipe_details(request, recipe_uri):
                 OPTIONAL { ?recipe v:rating ?rating }
                 OPTIONAL { 
                     ?recipe v:cuisine ?cuisine .
-                    ?cuisine rdfs:label ?cuisineLabel 
+                    ?cuisine rdfs:label ?cuisineLabel .
+                    OPTIONAL {
+                        ?cuisine rdfs:seeAlso ?cuisineInfo .
+                    }
                 }
                 OPTIONAL { 
                     ?recipe v:course ?course .
@@ -170,7 +173,7 @@ def get_recipe_details(request, recipe_uri):
                 }
             }
             GROUP BY ?recipe ?recipeLabel ?url ?recordHealthLabel ?voteCount 
-            ?rating ?cuisineLabel ?courseLabel ?courseInfo ?dietLabel ?dietInfo ?description
+            ?rating ?cuisineLabel ?cuisineInfo ?courseLabel ?courseInfo ?dietLabel ?dietInfo ?description
             ?prepTimeInMinutes ?cookTimeInMinutes ?authorLabel ?categoryLabel 
             ?ingredients ?instructions
         """ % recipe_uri

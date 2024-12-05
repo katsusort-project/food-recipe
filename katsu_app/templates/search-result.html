@@ -43,7 +43,7 @@
             </p>
             {% if recipes %}
                 <p class="text-lg italic font-semibold text-blue-700">
-                    Found total <span class="text-l font-bold text-red-600">{{ total_recipes }}</span> relevant to your search
+                    Found total <span class="text-l font-bold text-red-600">{{ total_recipes }}</span> recipes relevant to your search
                 </p>
             {% endif %}
         </div>
@@ -124,14 +124,14 @@
                     });
                     recipeHtml += '</div>';
                 } else {
-                    recipeHtml = '<p class="text-gray-600 text-center">Tidak ada resep yang cocok dengan pencarian Anda.</p>';
+                    recipeHtml = '<p class="text-gray-600 text-center">No recipes match your search.</p>';
                 }
 
                 $('#recipeContainer').html(recipeHtml);
                 updatePaginationControls();
             } catch (error) {
                 console.error('Error loading recipes:', error);
-                $('#recipeContainer').html('<p class="text-red-600 text-center">Terjadi kesalahan saat memuat resep.</p>');
+                $('#recipeContainer').html('<p class="text-red-600 text-center">An error occurred while loading the recipes.</p>');
             }
         }
 

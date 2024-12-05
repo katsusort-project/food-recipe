@@ -37,7 +37,7 @@
         </div>
 
         <h1 class="text-3xl text-blue-700 text-center font-bold mb-6">{{ recipe.recipeLabel|default:"-" }}</h1>
-        
+
         <div class="flex items-center justify-center min-h-screen bg-gray-100">
             <div class="bg-white rounded-xl shadow-lg w-3/4 overflow-hidden">
                 {% if is_indo_recipe %}
@@ -96,6 +96,7 @@
                     <div class="p-6">
                         <div class="flex flex-col md:flex-row justify-between items-start mb-4">
                             <div class="flex flex-col mb-4 md:mb-0">
+                                
                                 <div class="text-yellow-500">
                                     {% with rating=recipe.rating|floatformat:0 %}
                                         {% for _ in "12345"|slice:":"|slice:":rating" %}
@@ -130,6 +131,13 @@
                             </div>
                             <div class="bg-gray-50 p-3 rounded">
                                 <span class="font-semibold">Cook Time:</span> {{ recipe.cookTimeInMinutes|default:"-" }} mins
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold mb-2">Description:</h3>
+                            <div class="bg-gray-50 p-4 rounded">
+                                {{ recipe.description|default:"No description available." }}
                             </div>
                         </div>
             
