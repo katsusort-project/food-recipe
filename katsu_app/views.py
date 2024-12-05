@@ -197,7 +197,10 @@ def get_recipe_details(request, recipe_uri):
     return render(request, 'search-result-details.html', context)
 
 def calculate_stars(rating):
-    full_stars = math.floor(rating)
+    if rating < 4.5:
+        full_stars = math.floor(rating)
+    else:
+        full_stars = math.ceil(rating)
     empty_stars = 5 - full_stars
     
     stars = ['★'] * full_stars
