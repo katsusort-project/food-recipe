@@ -3,6 +3,7 @@ from katsu_app.sparql_func import SPARQLQueryManager
 from django.http import JsonResponse
 from difflib import SequenceMatcher
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from urllib.parse import quote
 
 def show_main(request):
     return render(request, 'index.html')
@@ -82,7 +83,9 @@ def get_recipe_details(request, recipe_uri):
     context = {}
 
     # Query for indonesian recipes
+    recipe_uri = quote(recipe_uri, safe='')
     is_indo_recipe = True
+    
     query = """
         PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
         PREFIX v: <http://katsusort.org/vocab#>
